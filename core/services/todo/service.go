@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/afikrim/go-hexa-template/internal/core/domains"
-	"github.com/afikrim/go-hexa-template/internal/core/ports/repositories"
+	"github.com/afikrim/go-hexa-template/core/domains"
+	"github.com/afikrim/go-hexa-template/core/ports/repositories"
 )
 
 type service struct {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/afikrim/go-hexa-template/internal/core/domains"
-	"github.com/afikrim/go-hexa-template/internal/core/ports/services"
+	"github.com/afikrim/go-hexa-template/core/domains"
+	"github.com/afikrim/go-hexa-template/core/ports/services"
 	"github.com/labstack/echo"
 )
 

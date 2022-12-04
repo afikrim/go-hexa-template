@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/afikrim/go-hexa-template/config"
-	todo_service "github.com/afikrim/go-hexa-template/internal/core/services/todo"
-	http_handler "github.com/afikrim/go-hexa-template/internal/handlers/http"
-	todo_repository "github.com/afikrim/go-hexa-template/internal/repositories/todo"
+	todo_service "github.com/afikrim/go-hexa-template/core/services/todo"
+	http_handler "github.com/afikrim/go-hexa-template/handlers/http"
+	todo_repository "github.com/afikrim/go-hexa-template/repositories/todo"
 	"github.com/labstack/echo"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"

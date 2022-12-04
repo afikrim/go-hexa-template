@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/afikrim/go-hexa-template/internal/core/domains"
+	"github.com/afikrim/go-hexa-template/core/domains"
 	"gorm.io/gorm"
 )
 

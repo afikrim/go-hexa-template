@@ -3,7 +3,7 @@ package todo_repository
 import (
 	"time"
 
-	"github.com/afikrim/go-hexa-template/internal/core/domains"
+	"github.com/afikrim/go-hexa-template/core/domains"
 )
 
 type Todo struct {
