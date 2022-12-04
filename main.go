@@ -116,7 +116,7 @@ func NewDatabaseInstance(config *config.Config) (*gorm.DB, error) {
 	}
 
 	if config.DBAutoMigrate {
-		instance.AutoMigrate(&todo_repository.Todo{})
+		instance.AutoMigrate(&todo_repository.TodoDto{})
 	}
 
 	return instance, nil

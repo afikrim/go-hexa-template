@@ -6,7 +6,7 @@ import (
 	"github.com/afikrim/go-hexa-template/core/entity"
 )
 
-type Todo struct {
+type TodoDto struct {
 	ID        uint64     `gorm:"column:id;primaryKey;autoIncrement"`
 	Title     string     `gorm:"column:title;not null"`
 	Completed bool       `gorm:"column:completed;not null;default:false"`
@@ -14,11 +14,11 @@ type Todo struct {
 	UpdatedAt *time.Time `gorm:"column:updated_at;not null;autoUpdateTime"`
 }
 
-func (t Todo) TableName() string {
+func (t TodoDto) TableName() string {
 	return "todos"
 }
 
-func (t *Todo) ToDomain() *entity.Todo {
+func (t *TodoDto) ToEntity() *entity.Todo {
 	return &entity.Todo{
 		ID:        t.ID,
 		Title:     t.Title,
@@ -28,15 +28,21 @@ func (t *Todo) ToDomain() *entity.Todo {
 	}
 }
 
-func (Todo) FromDomain(d *entity.Todo) *Todo {
-	return &Todo{
+func (TodoDto) New(title string) *TodoDto {
+	return &TodoDto{
+		Title: title,
+	}
+}
+
+func (TodoDto) FromEntity(d *entity.Todo) *TodoDto {
+	return &TodoDto{
 		ID:        d.ID,
 		Title:     d.Title,
 		Completed: d.Completed,
 	}
 }
 
-func (Todo) FromDomainWithTimestamps(d *entity.Todo) *Todo {
+func (TodoDto) FromEntityWithTimestamps(d *entity.Todo) *TodoDto {
 	parsedCreatedAt, err := time.ParseInLocation("2006-01-02 15:04:05", d.CreatedAt, time.Local)
 	if err != nil {
 		panic(err)
@@ -47,7 +53,7 @@ func (Todo) FromDomainWithTimestamps(d *entity.Todo) *Todo {
 		panic(err)
 	}
 
-	return &Todo{
+	return &TodoDto{
 		ID:        d.ID,
 		Title:     d.Title,
 		Completed: d.Completed,

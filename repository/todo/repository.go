@@ -3,8 +3,11 @@ package todo_repository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/afikrim/go-hexa-template/core/entity"
+	errorutil "github.com/afikrim/go-hexa-template/pkg/error"
+	replacerutil "github.com/afikrim/go-hexa-template/pkg/replacer"
 	"gorm.io/gorm"
 )
 
@@ -18,73 +21,77 @@ func NewTodoRepository(db *gorm.DB) *repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context, dto *entity.CreateTodoDto) (*entity.Todo, error) {
-	todoModel := Todo{
-		Title: dto.Title,
-	}
+func (r *repository) Create(ctx context.Context, req *entity.CreateTodoRequest) (*entity.Todo, error) {
+	todoDto := TodoDto{}.New(req.Title)
 
-	if err := r.db.Create(&todoModel).WithContext(ctx).Error; err != nil {
+	if err := r.db.Create(&todoDto).WithContext(ctx).Error; err != nil {
 		return nil, err
 	}
 
-	return todoModel.ToDomain(), nil
+	return todoDto.ToEntity(), nil
 }
 
-func (r *repository) FindAll(ctx context.Context) ([]entity.Todo, error) {
-	var todosModel []Todo
+func (r *repository) FindAll(ctx context.Context) (entity.Todos, error) {
+	var todosDtos []*TodoDto
 
-	if err := r.db.Find(&todosModel).WithContext(ctx).Error; err != nil {
+	if err := r.db.Find(&todosDtos).WithContext(ctx).Error; err != nil {
 		return nil, err
 	}
 
-	var todos []entity.Todo
-	for _, todoModel := range todosModel {
-		todos = append(todos, *todoModel.ToDomain())
+	todos := entity.Todos{}
+	for _, todoDto := range todosDtos {
+		if todoDto == nil {
+			continue
+		}
+
+		todos = append(todos, todoDto.ToEntity())
 	}
 
 	return todos, nil
 }
 
 func (r *repository) FindOne(ctx context.Context, id uint64) (*entity.Todo, error) {
-	var todo Todo
+	var todo TodoDto
 
 	if err := r.db.First(&todo, id).WithContext(ctx).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("todo not found, %w", errorutil.GENERAL_NOT_FOUND)
+		}
+
 		return nil, err
 	}
 
-	return todo.ToDomain(), nil
+	return todo.ToEntity(), nil
 }
 
-func (r *repository) Update(ctx context.Context, id uint64, dto *entity.UpdateTodoDto) (*entity.Todo, error) {
+func (r *repository) Update(ctx context.Context, id uint64, req *entity.UpdateTodoRequest) (*entity.Todo, error) {
 	todo, err := r.FindOne(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	if todo == nil {
-		return nil, errors.New("Todo not found")
-	}
 
-	todoModel := Todo{}.FromDomainWithTimestamps(todo)
-	if dto.Title != nil {
-		todoModel.Title = *dto.Title
-	}
-	if dto.Completed != nil {
-		todoModel.Completed = *dto.Completed
-	}
+	todoDto := TodoDto{}.FromEntityWithTimestamps(todo)
+	todoDto.Title = (replacerutil.Replace(todoDto.Title, req.Title)).(string)
+	todoDto.Completed = (replacerutil.Replace(todoDto.Completed, req.Completed)).(bool)
 
-	if err := r.db.Save(&todoModel).WithContext(ctx).Error; err != nil {
+	if err := r.db.Save(&todoDto).WithContext(ctx).Error; err != nil {
 		return nil, err
 	}
 
-	return todoModel.ToDomain(), nil
+	return todoDto.ToEntity(), nil
 }
 
 func (r *repository) Remove(ctx context.Context, id uint64) error {
-	todo := entity.Todo{
+	_, err := r.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	todoDto := entity.Todo{
 		ID: id,
 	}
 
-	if err := r.db.Delete(&todo).WithContext(ctx).Error; err != nil {
+	if err := r.db.Delete(&todoDto).WithContext(ctx).Error; err != nil {
 		return err
 	}
 

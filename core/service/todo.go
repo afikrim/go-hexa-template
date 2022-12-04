@@ -9,9 +9,9 @@ import (
 )
 
 type TodoService interface {
-	Create(ctx context.Context, dto *entity.CreateTodoDto) (*entity.Todo, error)
-	FindAll(ctx context.Context) ([]entity.Todo, error)
-	Update(ctx context.Context, id string, dto *entity.UpdateTodoDto) (*entity.Todo, error)
+	Create(ctx context.Context, dto *entity.CreateTodoRequest) (*entity.Todo, error)
+	FindAll(ctx context.Context) (entity.Todos, error)
+	Update(ctx context.Context, id string, dto *entity.UpdateTodoRequest) (*entity.Todo, error)
 	Remove(ctx context.Context, id string) error
 }
 
@@ -25,7 +25,7 @@ func NewTodoService(repo repositories.TodoRepository) *service {
 	}
 }
 
-func (s *service) Create(ctx context.Context, dto *entity.CreateTodoDto) (*entity.Todo, error) {
+func (s *service) Create(ctx context.Context, dto *entity.CreateTodoRequest) (*entity.Todo, error) {
 	todo, err := s.repo.Create(ctx, dto)
 	if err != nil {
 		return nil, err
@@ -34,11 +34,11 @@ func (s *service) Create(ctx context.Context, dto *entity.CreateTodoDto) (*entit
 	return todo, nil
 }
 
-func (s *service) FindAll(ctx context.Context) ([]entity.Todo, error) {
+func (s *service) FindAll(ctx context.Context) (entity.Todos, error) {
 	return s.repo.FindAll(ctx)
 }
 
-func (s *service) Update(ctx context.Context, id string, dto *entity.UpdateTodoDto) (*entity.Todo, error) {
+func (s *service) Update(ctx context.Context, id string, dto *entity.UpdateTodoRequest) (*entity.Todo, error) {
 	parsedId, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		return nil, err
