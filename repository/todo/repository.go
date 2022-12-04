@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/afikrim/go-hexa-template/core/domains"
+	"github.com/afikrim/go-hexa-template/core/entity"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +18,7 @@ func NewTodoRepository(db *gorm.DB) *repository {
 	}
 }
 
-func (r *repository) Create(ctx context.Context, dto *domains.CreateTodoDto) (*domains.Todo, error) {
+func (r *repository) Create(ctx context.Context, dto *entity.CreateTodoDto) (*entity.Todo, error) {
 	todoModel := Todo{
 		Title: dto.Title,
 	}
@@ -30,14 +30,14 @@ func (r *repository) Create(ctx context.Context, dto *domains.CreateTodoDto) (*d
 	return todoModel.ToDomain(), nil
 }
 
-func (r *repository) FindAll(ctx context.Context) ([]domains.Todo, error) {
+func (r *repository) FindAll(ctx context.Context) ([]entity.Todo, error) {
 	var todosModel []Todo
 
 	if err := r.db.Find(&todosModel).WithContext(ctx).Error; err != nil {
 		return nil, err
 	}
 
-	var todos []domains.Todo
+	var todos []entity.Todo
 	for _, todoModel := range todosModel {
 		todos = append(todos, *todoModel.ToDomain())
 	}
@@ -45,7 +45,7 @@ func (r *repository) FindAll(ctx context.Context) ([]domains.Todo, error) {
 	return todos, nil
 }
 
-func (r *repository) FindOne(ctx context.Context, id uint64) (*domains.Todo, error) {
+func (r *repository) FindOne(ctx context.Context, id uint64) (*entity.Todo, error) {
 	var todo Todo
 
 	if err := r.db.First(&todo, id).WithContext(ctx).Error; err != nil {
@@ -55,7 +55,7 @@ func (r *repository) FindOne(ctx context.Context, id uint64) (*domains.Todo, err
 	return todo.ToDomain(), nil
 }
 
-func (r *repository) Update(ctx context.Context, id uint64, dto *domains.UpdateTodoDto) (*domains.Todo, error) {
+func (r *repository) Update(ctx context.Context, id uint64, dto *entity.UpdateTodoDto) (*entity.Todo, error) {
 	todo, err := r.FindOne(ctx, id)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (r *repository) Update(ctx context.Context, id uint64, dto *domains.UpdateT
 }
 
 func (r *repository) Remove(ctx context.Context, id uint64) error {
-	todo := domains.Todo{
+	todo := entity.Todo{
 		ID: id,
 	}
 

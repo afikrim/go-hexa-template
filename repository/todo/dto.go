@@ -3,7 +3,7 @@ package todo_repository
 import (
 	"time"
 
-	"github.com/afikrim/go-hexa-template/core/domains"
+	"github.com/afikrim/go-hexa-template/core/entity"
 )
 
 type Todo struct {
@@ -18,8 +18,8 @@ func (t Todo) TableName() string {
 	return "todos"
 }
 
-func (t *Todo) ToDomain() *domains.Todo {
-	return &domains.Todo{
+func (t *Todo) ToDomain() *entity.Todo {
+	return &entity.Todo{
 		ID:        t.ID,
 		Title:     t.Title,
 		Completed: t.Completed,
@@ -28,7 +28,7 @@ func (t *Todo) ToDomain() *domains.Todo {
 	}
 }
 
-func (Todo) FromDomain(d *domains.Todo) *Todo {
+func (Todo) FromDomain(d *entity.Todo) *Todo {
 	return &Todo{
 		ID:        d.ID,
 		Title:     d.Title,
@@ -36,7 +36,7 @@ func (Todo) FromDomain(d *domains.Todo) *Todo {
 	}
 }
 
-func (Todo) FromDomainWithTimestamps(d *domains.Todo) *Todo {
+func (Todo) FromDomainWithTimestamps(d *entity.Todo) *Todo {
 	parsedCreatedAt, err := time.ParseInLocation("2006-01-02 15:04:05", d.CreatedAt, time.Local)
 	if err != nil {
 		panic(err)

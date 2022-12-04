@@ -1,4 +1,4 @@
-package domains
+package entity
 
 type Todo struct {
 	ID        uint64 `json:"id"`

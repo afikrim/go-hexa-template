@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/afikrim/go-hexa-template/config"
-	todo_service "github.com/afikrim/go-hexa-template/core/services/todo"
+	service "github.com/afikrim/go-hexa-template/core/service"
 	http_handler "github.com/afikrim/go-hexa-template/handlers/http"
-	todo_repository "github.com/afikrim/go-hexa-template/repositories/todo"
+	todo_repository "github.com/afikrim/go-hexa-template/repository/todo"
 	"github.com/labstack/echo"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -39,7 +39,7 @@ func main() {
 	apiV1Router := e.Group("/api/v1")
 
 	todoRepository := todo_repository.NewTodoRepository(db)
-	todoService := todo_service.NewTodoService(todoRepository)
+	todoService := service.NewTodoService(todoRepository)
 	todoHandler := http_handler.NewTodoHttpHandler(todoService)
 	todoRouter := apiV1Router.Group("/todos")
 

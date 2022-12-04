@@ -4,16 +4,16 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/afikrim/go-hexa-template/core/domains"
-	"github.com/afikrim/go-hexa-template/core/ports/services"
+	"github.com/afikrim/go-hexa-template/core/entity"
+	"github.com/afikrim/go-hexa-template/core/service"
 	"github.com/labstack/echo"
 )
 
 type TodoHttpHandler struct {
-	service services.TodoService
+	service service.TodoService
 }
 
-func NewTodoHttpHandler(service services.TodoService) *TodoHttpHandler {
+func NewTodoHttpHandler(service service.TodoService) *TodoHttpHandler {
 	return &TodoHttpHandler{
 		service: service,
 	}
@@ -22,7 +22,7 @@ func NewTodoHttpHandler(service services.TodoService) *TodoHttpHandler {
 func (h *TodoHttpHandler) Create(e echo.Context) error {
 	ctx := context.Background()
 
-	dto := domains.CreateTodoDto{}
+	dto := entity.CreateTodoDto{}
 	if err := e.Bind(&dto); err != nil {
 		return e.JSON(http.StatusBadRequest, &Response{Status: http.StatusBadRequest, Message: err.Error()})
 	}
@@ -49,7 +49,7 @@ func (h *TodoHttpHandler) FindAll(e echo.Context) error {
 func (h *TodoHttpHandler) Update(e echo.Context) error {
 	ctx := context.Background()
 
-	dto := domains.UpdateTodoDto{}
+	dto := entity.UpdateTodoDto{}
 	if err := e.Bind(&dto); err != nil {
 		return e.JSON(http.StatusBadRequest, &Response{Status: http.StatusBadRequest, Message: err.Error()})
 	}
