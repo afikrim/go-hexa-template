@@ -1,0 +1,17 @@
+syntax="proto3";
+
+package engine.v1;
+
+import "google/api/annotations.proto";
+import "engine/v1/business_type.proto";
+
+option go_package = "github.com/afikrim/go-hexa-template/handler/api/pb/engine/v1;engine_v1";
+
+service EngineService {
+  rpc GetBusinessTypes(GetBusinessTypesRequest) returns (GetBusinessTypesResponse) {
+    option (google.api.http) = {
+      get: "/v1/business-types"
+    };
+  }
+}
+

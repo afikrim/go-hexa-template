@@ -1,31 +1,59 @@
 package config
 
 import (
-	"github.com/caarlos0/env/v6"
-	"github.com/joho/godotenv"
+	"fmt"
+	"os"
+	"path"
+
+	"github.com/afikrim/go-hexa-template/pkg/envloader"
 )
 
 type Config struct {
-	Host string `env:"APP_HOST" envDefault:"localhost"`
-	Port int    `env:"APP_PORT" envDefault:"8080"`
-
-	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
-
-	DBHost        string `env:"DB_HOST" envDefault:"localhost"`
-	DBPort        int    `env:"DB_PORT" envDefault:"3306"`
-	DBUsername    string `env:"DB_USERNAME" envDefault:"root"`
-	DBPassword    string `env:"DB_PASSWORD"`
-	DBDatabase    string `env:"DB_DATABASE"`
-	DBDebug       bool   `env:"DB_DEBUG" envDefault:"false"`
-	DBDialect     string `env:"DB_DIALECT" envDefault:"mysql"`
-	DBAutoMigrate bool   `env:"DB_AUTO_MIGRATE" envDefault:"true"`
+	// Application Configurations
+	Application Application
+	// Database Configurations
+	Database Database
 }
 
-func GetConfig() (*Config, error) {
-	config := Config{}
+// ConfigOption is a function to set config options
+type ConfigOption func(*Config) error
 
-	err := godotenv.Load(".env")
-	err = env.Parse(&config)
+// New is a function to create new config
+func New(opts ...ConfigOption) *Config {
+	cfg := &Config{}
 
-	return &config, err
+	for _, opt := range opts {
+		err := opt(cfg)
+		if err != nil {
+			fmt.Println("error while setting config", err)
+		}
+	}
+
+	return cfg
+}
+
+// WithEtcd is a function to set config from etcd
+func WithEtcd(prefix string, endpoints []string) ConfigOption {
+	return func(cfg *Config) error {
+		return envloader.Load(cfg, envloader.WithEtcd(prefix, endpoints))
+	}
+}
+
+// WithFile is a function to set config file
+func WithFile(file string) ConfigOption {
+	return func(cfg *Config) error {
+		wd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+
+		return envloader.Load(cfg, envloader.WithFile(path.Join(wd, file)))
+	}
+}
+
+// WithEnv is a function to set config from environment
+func WithEnv() ConfigOption {
+	return func(cfg *Config) error {
+		return envloader.Load(cfg)
+	}
 }

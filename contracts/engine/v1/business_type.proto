@@ -1,0 +1,23 @@
+syntax="proto3";
+
+package engine.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/afikrim/go-hexa-template/handler/api/pb/engine/v1;engine_v1";
+
+message BusinessType {
+  string serial = 1;
+  string name = 2;
+  string description = 3;
+  string business_type_serial = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetBusinessTypesRequest {}
+
+message GetBusinessTypesResponse {
+  repeated BusinessType business_types = 1;
+}
+
